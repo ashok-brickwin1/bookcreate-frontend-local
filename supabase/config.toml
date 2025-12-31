@@ -1,0 +1,25 @@
+project_id = "jybgtlnprbyjumtkhjww"
+
+[functions.refine-digital-twin]
+verify_jwt = false
+
+[functions.enhance-answer]
+verify_jwt = false
+
+[functions.research-footprint]
+verify_jwt = false
+
+[functions.refine-answer]
+verify_jwt = false
+
+[functions.generate-digital-twin]
+verify_jwt = false
+
+[functions.compare-digital-twins]
+verify_jwt = false
+
+[functions.get-era-context]
+verify_jwt = false
+
+[functions.extract-writing-style]
+verify_jwt = false
