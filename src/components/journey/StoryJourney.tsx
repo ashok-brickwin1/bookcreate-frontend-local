@@ -65,10 +65,10 @@ export const StoryJourney = ({ onBack }: StoryJourneyProps) => {
     setBookSetup(setup);
     
     // Create book if user is logged in
-    if (user && !currentBook) {
-      const bookType = setup.genre as BookType;
-      await createBook(setup.workingTitle || basicInfo?.fullName + "'s Story", bookType);
-    }
+    // if (user && !currentBook) {
+    //   const bookType = setup.genre as BookType;
+    //   await createBook(setup.workingTitle || basicInfo?.fullName + "'s Story", bookType);
+    // }
     
     setCurrentStep(2);
   };

@@ -5,6 +5,7 @@ import { LifeJourneyTimeline, JourneyMoment } from "./LifeJourneyTimeline";
 import { ArrowRight, ArrowLeft, Edit3, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { bulkSaveLifeMoments } from "@/api/lifeMoment";
+import { CreateBookOutline } from "@/api/bookSetup";
 
 
 
@@ -40,6 +41,7 @@ export const ReviewStep = ({
 
 
   const handleGenerateBook = async () => {
+    CreateBookOutline();
   if (journeyMoments.length > 0) {
     const payload = journeyMoments.map(m => ({
       moment_type: m.type,

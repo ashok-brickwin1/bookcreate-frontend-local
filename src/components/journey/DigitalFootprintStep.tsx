@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BasicInfo } from "./BasicInfoStep";
 import { 
@@ -51,6 +51,37 @@ export const DigitalFootprintStep = ({ basicInfo, onComplete, onBack }: DigitalF
 
   const { status, researchData } = useBookStatus(bookId);
 
+  const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
+  try {
+    const parsed = JSON.parse(outlineJson);
+
+    if (!parsed?.chapters || !Array.isArray(parsed.chapters)) return [];
+
+    return parsed.chapters.map((ch: any) => {
+      const summaryText = [
+        ch.core_focus,
+        ch.opening_story,
+        ch.big_idea,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      let dataStrength: ChapterSummary["dataStrength"] = "weak";
+      if (summaryText.length > 300) dataStrength = "strong";
+      else if (summaryText.length > 150) dataStrength = "moderate";
+
+      return {
+        title: ch.chapter_title,
+        summary: summaryText,
+        dataStrength,
+      };
+    });
+  } catch (err) {
+    console.error("Failed to parse outline JSON", err);
+    return [];
+  }
+};
+
   if (!status) {
   console.log("Initializing your book…")
 }
@@ -65,10 +96,58 @@ if (status === "failed") {
   // return <p>Research in progress… ({status})</p>;
 }
 
-if (status === "outline_ready") {
-  console.log("digital summary outline generated",JSON.stringify(researchData, null, 2))
+// if (status === "outline_ready") {
+//   console.log("digital summary outline generated",JSON.stringify(researchData, null, 2))
+//   if (status === "outline_ready" && researchData) {
+//     const chapters = mapOutlineToChapters(researchData);
+//     console.log("mapped outlinetochapters",chapters)
+
+//     setFootprint(prev =>
+//       prev
+//         ? { ...prev, chapters }
+//         : {
+//             biography: "",
+//             career: "",
+//             achievements: "",
+//             publicStatements: "",
+//             insights: "",
+//             authenticityScore: 0,
+//             chapters,
+//           }
+//     );
+
+//     setIsSearching(false);
+//   }
   
-}
+// }
+
+
+
+
+useEffect(() => {
+  console.log("use effect called for mapOutlineToChapters ")
+  if (status === "outline_ready" && researchData) {
+    const chapters = mapOutlineToChapters(researchData);
+    console.log("mapped outlinetochapters",chapters)
+
+    setFootprint(prev =>
+      prev
+        ? { ...prev, chapters }
+        : {
+            biography: "",
+            career: "",
+            achievements: "",
+            publicStatements: "",
+            insights: "",
+            authenticityScore: 0,
+            chapters,
+          }
+    );
+
+    setIsSearching(false);
+  }
+}, [status, researchData]);
+
 
 
 
@@ -80,51 +159,51 @@ if (status === "outline_ready") {
     "Building your story foundation..."
   ];
 
-  useEffect(() => {
-    const fetchFootprint = async () => {
-      // Animate through phases
-      const phaseInterval = setInterval(() => {
-        setSearchPhase((prev) => (prev < searchPhases.length - 1 ? prev + 1 : prev));
-      }, 1500);
+  // useEffect(() => {
+  //   const fetchFootprint = async () => {
+      
+  //     const phaseInterval = setInterval(() => {
+  //       setSearchPhase((prev) => (prev < searchPhases.length - 1 ? prev + 1 : prev));
+  //     }, 1500);
 
-      try {
-        const { data, error } = await supabase.functions.invoke('research-footprint', {
-          body: { basicInfo }
-        });
+  //     try {
+  //       const { data, error } = await supabase.functions.invoke('research-footprint', {
+  //         body: { basicInfo }
+  //       });
 
-        if (error) throw new Error(error.message);
-        if (data.error) throw new Error(data.error);
+  //       if (error) throw new Error(error.message);
+  //       if (data.error) throw new Error(data.error);
 
-        setFootprint(data);
-      } catch (error) {
-        console.error('Footprint research error:', error);
-        toast({
-          title: "Research Complete",
-          description: "We've gathered what we could find. Let's build your story together!",
-        });
-        // Create fallback footprint
-        setFootprint({
-          biography: `${basicInfo.fullName} is ${basicInfo.role || 'an individual'} with a unique story to tell.`,
-          career: basicInfo.role ? `Currently serving as ${basicInfo.role}.` : "Career journey to be explored through your narrative.",
-          achievements: "Your achievements will be revealed through the questions ahead.",
-          publicStatements: "Your voice and perspectives will shape this section.",
-          insights: "A story waiting to be told, full of potential and meaning.",
-          authenticityScore: 50,
-          chapters: [
-            { title: "Origins", summary: "Where your story begins", dataStrength: "weak" as const },
-            { title: "Professional Journey", summary: "Your career path and growth", dataStrength: "moderate" as const },
-            { title: "Growth & Discovery", summary: "What drives and inspires you", dataStrength: "weak" as const },
-            { title: "Legacy", summary: "The impact you want to leave", dataStrength: "weak" as const },
-          ]
-        });
-      } finally {
-        clearInterval(phaseInterval);
-        setIsSearching(false);
-      }
-    };
+  //       setFootprint(data);
+  //     } catch (error) {
+  //       console.error('Footprint research error:', error);
+  //       toast({
+  //         title: "Research Complete",
+  //         description: "We've gathered what we could find. Let's build your story together!",
+  //       });
+  //       // Create fallback footprint
+  //       setFootprint({
+  //         biography: `${basicInfo.fullName} is ${basicInfo.role || 'an individual'} with a unique story to tell.`,
+  //         career: basicInfo.role ? `Currently serving as ${basicInfo.role}.` : "Career journey to be explored through your narrative.",
+  //         achievements: "Your achievements will be revealed through the questions ahead.",
+  //         publicStatements: "Your voice and perspectives will shape this section.",
+  //         insights: "A story waiting to be told, full of potential and meaning.",
+  //         authenticityScore: 50,
+  //         chapters: [
+  //           { title: "Origins", summary: "Where your story begins", dataStrength: "weak" as const },
+  //           { title: "Professional Journey", summary: "Your career path and growth", dataStrength: "moderate" as const },
+  //           { title: "Growth & Discovery", summary: "What drives and inspires you", dataStrength: "weak" as const },
+  //           { title: "Legacy", summary: "The impact you want to leave", dataStrength: "weak" as const },
+  //         ]
+  //       });
+  //     } finally {
+  //       clearInterval(phaseInterval);
+  //       setIsSearching(false);
+  //     }
+  //   };
 
-    fetchFootprint();
-  }, [basicInfo]);
+  //   fetchFootprint();
+  // }, [basicInfo]);
 
   const getStrengthColor = (strength: string) => {
     switch (strength) {

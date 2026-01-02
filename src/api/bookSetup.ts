@@ -70,3 +70,38 @@ export async function submitBookSetup(data: BookSetupData) {
 
   return res.json();
 }
+
+
+
+export const CreateBookOutline = async (
+) => {
+    
+
+try {
+  console.log("create book outline called")
+    const token = localStorage.getItem("access_token");
+    const current_book_id = localStorage.getItem("current_book_id");
+
+
+    const res = await fetch(
+      `${API_BASE}/book/create/outline/${current_book_id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Submission failed");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to submit create book outline", err);
+  }
+};  
