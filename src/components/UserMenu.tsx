@@ -83,7 +83,7 @@ export const UserMenu = () => {
                   onClick={async () => {
                     await signOut();
                     setIsOpen(false);
-                    navigate("/");
+                    navigate("/auth");
                   }}
                   className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors"
                 >
