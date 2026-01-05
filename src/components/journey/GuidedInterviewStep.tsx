@@ -41,8 +41,19 @@ export const GuidedInterviewStep = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { toast } = useToast();
 
-  const currentQuestion = questions[currentIndex];
-  const category = categories.find(c => c.id === currentQuestion.category);
+  const delay = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
+
+  const currentQuestion = questions[currentIndex] ?? null;
+  if (!currentQuestion) {
+  return null
+}
+  // const category = categories.find(c => c.id === currentQuestion.category);
+  const category = categories.find(
+  c => c.id === currentQuestion.category
+) ?? null;
+
   const progress = getTotalProgress(answers);
   const currentAnswer = answers[currentQuestion.id] || "";
 
@@ -73,27 +84,29 @@ export const GuidedInterviewStep = ({
   setShowConfirmation(false);
 };
 
-  const handleComplete = async () => {
+ const handleComplete = async () => {
+  await delay(200);
 
-  const payload = questions.map(q => ({
-    dummy_question_id: q.id,
-    category: q.category,
-    sub_section: q.subSection,
-    life_stage: q.lifeStage,
-    title: q.title,
-    prompt: q.prompt,
-    help_text: q.helpText,
-    context_prompt: q.contextPrompt,
-    answer_text: answers[q.id] || "",
-  }));
+  const payload = questions
+    .filter(q => q && q.category) // ✅ CRITICAL SAFETY
+    .map(q => ({
+      dummy_question_id: q.id,
+      category: q.category,
+      sub_section: q.subSection,
+      life_stage: q.lifeStage,
+      title: q.title,
+      prompt: q.prompt,
+      help_text: q.helpText,
+      context_prompt: q.contextPrompt,
+      answer_text: answers[q.id] || "",
+    }));
 
   await bulkSaveAnswers(payload);
   onComplete();
 };
 
 
-const delay = (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
+
 
 
   const handleRefineAnswer = async () => {
