@@ -92,6 +92,10 @@ export const GuidedInterviewStep = ({
 };
 
 
+const delay = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
+
   const handleRefineAnswer = async () => {
     if (!currentAnswer.trim()) {
       toast({
@@ -161,6 +165,7 @@ export const GuidedInterviewStep = ({
   //   }
   // };
   const handleNext = async () => {
+    await delay(200);
   const payload = {
     dummy_question_id: currentQuestion.id,
     category: currentQuestion.category,
@@ -219,10 +224,7 @@ export const GuidedInterviewStep = ({
             </button>
 
             <div className="flex items-center gap-4">
-              <WritingStyleSelector 
-                currentStyle={writingStyle}
-                onStyleChange={onWritingStyleChange}
-              />
+             
               <div className="h-2 w-24 md:w-32 bg-secondary rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary transition-all duration-500"
