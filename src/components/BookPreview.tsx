@@ -10,6 +10,7 @@ import { generatePrintReadyPDF } from "@/lib/generatePrintReadyPDF";
 import { useBook } from "@/hooks/useBook";
 import { BookOpen, Download, ArrowLeft, Sparkles, Loader2, Check, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CreateBookFinal } from "@/api/bookSetup";
 
 interface BookPreviewProps {
   answers: Record<string, string>;
@@ -30,22 +31,75 @@ export const BookPreview = ({ answers, onBack, onStartOver }: BookPreviewProps) 
     setShowTwinDialog(true);
   };
 
-  const handleGeneratePDF = async () => {
+
+  //  const handleGenerateBook = async () => {
+  //     CreateBookOutline();
+  //   if (journeyMoments.length > 0) {
+  //     const payload = journeyMoments.map(m => ({
+  //       moment_type: m.type,
+  //       life_stage: m.lifeStage,
+  //       year: m.year ? Number(m.year) : undefined,
+  //       what_happened: m.title,
+  //       story: m.description,
+  //       lesson_learned: m.lesson,
+  //     }));
+  
+  //     try {
+  //       await bulkSaveLifeMoments(payload);
+  //     } catch (err) {
+  //       console.error("Failed to save life moments", err);
+  //       return; // ⛔ stop book generation if save fails
+  //     }
+  //   }
+  
+  //   // ✅ continue normal flow
+  //   onComplete();
+  // };
+
+
+
+  // const handleGeneratePDF = async () => {
+  //   setGenerating(true);
+    
+  //   try {
+  //     const filename = generateBookPDF(answers, {
+  //       title: currentBook?.title || "My Story",
+  //       subtitle: currentBook?.subtitle || undefined,
+  //       dedication: currentBook?.dedication || undefined,
+  //       coverColor: currentBook?.cover_color || "#E86C5D",
+  //       bookType: currentBook?.book_type || "autobiography",
+  //     });
+
+  //     setGenerated(true);
+  //     toast({
+  //       title: "Book generated!",
+  //       description: `${filename} has been downloaded.`,
+  //     });
+
+  //     setTimeout(() => setGenerated(false), 3000);
+  //   } catch (error) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Generation failed",
+  //       description: "There was an error generating your PDF. Please try again.",
+  //     });
+  //   } finally {
+  //     setGenerating(false);
+  //   }
+  // };
+
+   const handleGeneratePDF = async () => {
+    console.log("handleGeneratePDF called")
     setGenerating(true);
     
     try {
-      const filename = generateBookPDF(answers, {
-        title: currentBook?.title || "My Story",
-        subtitle: currentBook?.subtitle || undefined,
-        dedication: currentBook?.dedication || undefined,
-        coverColor: currentBook?.cover_color || "#E86C5D",
-        bookType: currentBook?.book_type || "autobiography",
-      });
+      CreateBookFinal();
+      
 
       setGenerated(true);
       toast({
-        title: "Book generated!",
-        description: `${filename} has been downloaded.`,
+        title: "Book generation in Progress",
+        description: `Your book generation is in progress, once completed you will get mail with pdf attached`,
       });
 
       setTimeout(() => setGenerated(false), 3000);

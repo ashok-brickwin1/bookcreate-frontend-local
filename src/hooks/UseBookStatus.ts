@@ -17,7 +17,7 @@ export function useBookStatus(bookId: string | null) {
         setStatus(res.status);
         
 
-        if (res.status === "outline_ready") {
+        if (res.status === "outline_ready" || res.status === "created") {
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
           }

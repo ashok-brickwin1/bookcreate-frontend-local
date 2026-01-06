@@ -51,17 +51,58 @@ export const DigitalFootprintStep = ({ basicInfo, onComplete, onBack }: DigitalF
 
   const { status, researchData } = useBookStatus(bookId);
 
-  const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
+//   const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
+//   try {
+//     const parsed = JSON.parse(outlineJson);
+
+//     if (!parsed?.chapters || !Array.isArray(parsed.chapters)) return [];
+
+//     return parsed.chapters.map((ch: any) => {
+//       const summaryText = [
+//         ch.core_focus,
+//         ch.opening_story,
+//         ch.big_idea,
+//       ]
+//         .filter(Boolean)
+//         .join(" ");
+
+//       let dataStrength: ChapterSummary["dataStrength"] = "weak";
+//       if (summaryText.length > 300) dataStrength = "strong";
+//       else if (summaryText.length > 150) dataStrength = "moderate";
+
+//       return {
+//         title: ch.chapter_title,
+//         summary: summaryText,
+//         dataStrength,
+//       };
+//     });
+//   } catch (err) {
+//     console.error("Failed to parse outline JSON", err);
+//     return [];
+//   }
+// };
+const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
   try {
     const parsed = JSON.parse(outlineJson);
 
     if (!parsed?.chapters || !Array.isArray(parsed.chapters)) return [];
 
     return parsed.chapters.map((ch: any) => {
+      // Normalize big ideas
+      const bigIdeasText = Array.isArray(ch.big_ideas)
+        ? ch.big_ideas.join(" ")
+        : ch.big_idea || "";
+
+      // Normalize direct quotes
+      const quotesText = Array.isArray(ch.direct_quotes)
+        ? ch.direct_quotes.join(" ")
+        : ch.direct_quote || "";
+
       const summaryText = [
         ch.core_focus,
         ch.opening_story,
-        ch.big_idea,
+        bigIdeasText,
+        quotesText,
       ]
         .filter(Boolean)
         .join(" ");
@@ -82,6 +123,27 @@ export const DigitalFootprintStep = ({ basicInfo, onComplete, onBack }: DigitalF
   }
 };
 
+useEffect(() => {
+  if (status === "failed") {
+    setIsSearching(false);
+
+    toast({
+      title: "Failed to generate book outline",
+      description:
+        "Something went wrong while generating your book. Please review your information and try again.",
+      variant: "destructive",
+    });
+
+   
+    
+
+    // Go back to previous step (pre-create-book UI)
+    onBack();
+  }
+}, [status]);
+
+
+
   if (!status) {
   console.log("Initializing your book…")
 }
@@ -90,11 +152,7 @@ if (status !== "outline_ready") {
   console.log("Research in progress…")
   // return <p>Research in progress… ({status})</p>;
 }
-if (status === "failed") {
-  console.log("failed to generate")
-  return ;
-  // return <p>Research in progress… ({status})</p>;
-}
+
 
 // if (status === "outline_ready") {
 //   console.log("digital summary outline generated",JSON.stringify(researchData, null, 2))
@@ -126,7 +184,7 @@ if (status === "failed") {
 
 useEffect(() => {
   console.log("use effect called for mapOutlineToChapters ")
-  if (status === "outline_ready" && researchData) {
+  if ((status === "outline_ready" || status === "created") && researchData) {
     const chapters = mapOutlineToChapters(researchData);
     console.log("mapped outlinetochapters",chapters)
 
