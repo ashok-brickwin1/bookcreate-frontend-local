@@ -175,7 +175,7 @@ export const ReviewStep = ({
 
         {/* Digital Footprint Summary */}
         {footprint && (
-          <div className="glass-card rounded-3xl p-8 shadow-elevated mt-8 animate-slide-up">
+          <div className="glass-card rounded-3xl p-8 shadow-elevated mt-8 animate-slide-up hidden">
             <h2 className="text-xl font-display font-medium text-foreground mb-4">
               Digital Footprint Summary
             </h2>

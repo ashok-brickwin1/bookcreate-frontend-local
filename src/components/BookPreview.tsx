@@ -200,17 +200,17 @@ export const BookPreview = ({ answers, onBack, onStartOver }: BookPreviewProps) 
             </button>
 
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={handleExport}>
+              <Button variant="outline" size="sm" onClick={handleExport} className="hidden">
                 <Download className="h-4 w-4 mr-2" />
                 Backup
               </Button>
-              <PublishingOptions 
+              {/* <PublishingOptions 
                 bookTitle={currentBook?.title || "My Story"}
                 onExportPDF={handleExportPDF}
                 onExportEPUB={handleExportEPUB}
                 onExportPrintReady={handleExportPrintReady}
                 isExporting={isExporting}
-              />
+              /> */}
               <Button 
                 variant="warm" 
                 size="sm" 
@@ -348,7 +348,7 @@ export const BookPreview = ({ answers, onBack, onStartOver }: BookPreviewProps) 
             size="xl" 
             className="shadow-glow"
             onClick={handleStartGeneration}
-            disabled={generating || progress.answered === 0}
+            disabled={generating}
           >
             {generating ? (
               <Loader2 className="h-5 w-5 mr-2 animate-spin" />
