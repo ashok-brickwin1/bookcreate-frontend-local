@@ -39,7 +39,23 @@ export const GuidedInterviewStep = ({
   const [isRefining, setIsRefining] = useState(false);
   const [refinedAnswer, setRefinedAnswer] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { toast } = useToast();
+
+// if (isLoading) {
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-background">
+//       <div className="flex flex-col items-center gap-3 animate-fade-in">
+//         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+//         <p className="text-sm text-muted-foreground">
+//           Loading Question...
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
+
 
   const delay = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +63,16 @@ export const GuidedInterviewStep = ({
 
   const currentQuestion = questions[currentIndex] ?? null;
   if (!currentQuestion) {
-  return null
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-3 animate-fade-in">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">
+          Loading Question
+        </p>
+      </div>
+    </div>
+  ); // Fallback if somehow we run out of questions
 }
   // const category = categories.find(c => c.id === currentQuestion.category);
   const category = categories.find(
@@ -85,23 +110,23 @@ export const GuidedInterviewStep = ({
 };
 
  const handleComplete = async () => {
-  await delay(200);
+  // await delay(200);
 
-  const payload = questions
-    .filter(q => q && q.category) // ✅ CRITICAL SAFETY
-    .map(q => ({
-      dummy_question_id: q.id,
-      category: q.category,
-      sub_section: q.subSection,
-      life_stage: q.lifeStage,
-      title: q.title,
-      prompt: q.prompt,
-      help_text: q.helpText,
-      context_prompt: q.contextPrompt,
-      answer_text: answers[q.id] || "",
-    }));
+  // const payload = questions
+  //   .filter(q => q && q.category) // ✅ CRITICAL SAFETY
+  //   .map(q => ({
+  //     dummy_question_id: q.id,
+  //     category: q.category,
+  //     sub_section: q.subSection,
+  //     life_stage: q.lifeStage,
+  //     title: q.title,
+  //     prompt: q.prompt,
+  //     help_text: q.helpText,
+  //     context_prompt: q.contextPrompt,
+  //     answer_text: answers[q.id] || "",
+  //   }));
 
-  await bulkSaveAnswers(payload);
+  // await bulkSaveAnswers(payload);
   onComplete();
 };
 
@@ -178,7 +203,8 @@ export const GuidedInterviewStep = ({
   //   }
   // };
   const handleNext = async () => {
-    await delay(200);
+    setIsLoading(true);
+    // await delay(200);
   const payload = {
     dummy_question_id: currentQuestion.id,
     category: currentQuestion.category,
@@ -200,6 +226,9 @@ export const GuidedInterviewStep = ({
       variant: "destructive",
     });
     return; // ⛔ don't move forward
+  }
+  finally {
+    setIsLoading(false); // End loading
   }
 
   if (currentIndex < questions.length - 1) {
@@ -378,9 +407,12 @@ export const GuidedInterviewStep = ({
                 </>
               ) : (
                 <>
+               
                   Continue
                   <ArrowRight className="h-4 w-4 ml-1" />
+                
                 </>
+                
               )}
             </Button>
           </div>
