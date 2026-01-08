@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 // import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,10 @@ import {
   TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useBookStatus } from "@/hooks/UseBookStatus";
+// import { useBookStatus } from "@/hooks/UseBookStatus";
+import { CreateBookOutline } from "@/api/bookSetup";
+import { checkBookStatus, fetchResearchData } from "@/api/bookSetup";
+import { set } from "date-fns";
 
 export interface FootprintData {
   biography: string;
@@ -42,14 +45,19 @@ interface DigitalFootprintStepProps {
 }
 
 export const DigitalFootprintStep = ({ basicInfo, onComplete, onBack }: DigitalFootprintStepProps) => {
-  const [isSearching, setIsSearching] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [footprint, setFootprint] = useState<FootprintData | null>(null);
   const [searchPhase, setSearchPhase] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [researchData, setResearchData] = useState<any>(null);
   const { toast } = useToast();
+  const [status, setStatus] = useState<string | null>(null);
 
   const bookId = localStorage.getItem("current_book_id");
 
-  const { status, researchData } = useBookStatus(bookId);
+  // const { status, researchData } = useBookStatus(bookId);
+  const delay = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
 
 //   const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
 //   try {
@@ -123,35 +131,35 @@ const mapOutlineToChapters = (outlineJson: string): ChapterSummary[] => {
   }
 };
 
-useEffect(() => {
-  if (status === "failed") {
-    setIsSearching(false);
+// useEffect(() => {
+//   if (status === "failed") {
+//     setIsSearching(false);
 
-    toast({
-      title: "Failed to generate book outline",
-      description:
-        "Something went wrong while generating your book. Please review your information and try again.",
-      variant: "destructive",
-    });
+//     toast({
+//       title: "Failed to generate book outline",
+//       description:
+//         "Something went wrong while generating your book. Please review your information and try again.",
+//       variant: "destructive",
+//     });
 
    
     
 
-    // Go back to previous step (pre-create-book UI)
-    onBack();
-  }
-}, [status]);
+//     // Go back to previous step (pre-create-book UI)
+//     onBack();
+//   }
+// }, [status]);
 
 
 
-  if (!status) {
-  console.log("Initializing your book…")
-}
+//   if (!status) {
+//   console.log("Initializing your book…")
+// }
 
-if (status !== "outline_ready") {
-  console.log("Research in progress…")
-  // return <p>Research in progress… ({status})</p>;
-}
+// if (status !== "outline_ready") {
+//   console.log("Research in progress…")
+//   // return <p>Research in progress… ({status})</p>;
+// }
 
 
 // if (status === "outline_ready") {
@@ -182,29 +190,239 @@ if (status !== "outline_ready") {
 
 
 
+// useEffect(() => {
+//   console.log("use effect called for mapOutlineToChapters ")
+//   if ((status === "outline_ready" || status === "created") && researchData) {
+//     const chapters = mapOutlineToChapters(researchData);
+//     console.log("mapped outlinetochapters",chapters)
+
+//     setFootprint(prev =>
+//       prev
+//         ? { ...prev, chapters }
+//         : {
+//             biography: "",
+//             career: "",
+//             achievements: "",
+//             publicStatements: "",
+//             insights: "",
+//             authenticityScore: 0,
+//             chapters,
+//           }
+//     );
+
+//     setIsSearching(false);
+//   }
+// }, [status, researchData]);
+
+// const handleGenerateOutline = async () => {
+//   console.log("handleGenerateOutline called")
+//   setIsSearching(true);
+//     CreateBookOutline();
+//     useBookStatus(bookId);
+
+// };
+
+
 useEffect(() => {
-  console.log("use effect called for mapOutlineToChapters ")
-  if ((status === "outline_ready" || status === "created") && researchData) {
-    const chapters = mapOutlineToChapters(researchData);
-    console.log("mapped outlinetochapters",chapters)
+  console.log("use effect called to fetch research data for bookId",bookId)
+  const fetchAndSetResearchData = async () => {
+    if (bookId) {
+      try {
 
-    setFootprint(prev =>
-      prev
-        ? { ...prev, chapters }
-        : {
-            biography: "",
-            career: "",
-            achievements: "",
-            publicStatements: "",
-            insights: "",
-            authenticityScore: 0,
-            chapters,
-          }
-    );
+        const researchRes = await fetchResearchData(bookId);
+        // setResearchData(researchRes.research_data);
+        const chapters = mapOutlineToChapters(researchRes.research_data);
+        console.log("mapped outlinetochapters", chapters);
 
-    setIsSearching(false);
+        setFootprint(prev =>
+          prev
+            ? { ...prev, chapters }
+            : {
+                biography: "",
+                career: "",
+                achievements: "",
+                publicStatements: "",
+                insights: "",
+                authenticityScore: 0,
+                chapters,
+              }
+        );
+
+        setIsSearching(false);
+      } catch (err) {
+        console.error("Failed to fetch research data", err);
+      }
+    }
+  };
+  fetchAndSetResearchData();
+  
+}, [bookId]);
+
+// const PollAndGetData= async () => {
+//   console.log("PollAndGetData called to fetch research data for bookId",bookId)
+//   console.log("polling started")
+  
+//       intervalRef.current = setInterval(async () => {
+//         try {
+//           console.log("polling for status for bookId",bookId)
+//           const res = await checkBookStatus(bookId);
+//           setStatus(res.status);
+          
+  
+//           if (res.status === "outline_ready" || res.status === "created") {
+//             if (intervalRef.current) {
+//               clearInterval(intervalRef.current);
+//             }
+  
+//             const researchRes = await fetchResearchData(bookId);
+//             // setResearchData(researchRes.research_data);
+//             const chapters = mapOutlineToChapters(researchRes.research_data);
+//         console.log("mapped outlinetochapters", chapters);
+
+//         setFootprint(prev =>
+//           prev
+//             ? { ...prev, chapters }
+//             : {
+//                 biography: "",
+//                 career: "",
+//                 achievements: "",
+//                 publicStatements: "",
+//                 insights: "",
+//                 authenticityScore: 0,
+//                 chapters,
+//               }
+//         );
+//           }
+//         } catch (err) {
+//           console.error("Status polling failed", err);
+//         }
+//       }, 2000);
+
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//   }
+
+
+const PollAndGetData = () => {
+  if (!bookId) return;
+
+  // clear any existing poll
+  if (intervalRef.current) {
+    clearInterval(intervalRef.current);
   }
-}, [status, researchData]);
+
+  intervalRef.current = setInterval(async () => {
+    try {
+      console.log("🔄 polling book status", bookId);
+
+      const res = await checkBookStatus(bookId);
+      setStatus(res.status);
+
+      if (res.status === "outline_ready" || res.status === "created") {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+
+        const researchRes = await fetchResearchData(bookId);
+        const chapters = mapOutlineToChapters(researchRes.research_data);
+
+        setFootprint({
+          biography: "",
+          career: "",
+          achievements: "",
+          publicStatements: "",
+          insights: "",
+          authenticityScore: 0,
+          chapters,
+        });
+
+        setIsSearching(false);
+      }
+
+      if (res.status === "failed") {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+
+        setIsSearching(false);
+
+        toast({
+          title: "Outline generation failed",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+
+        onBack();
+      }
+    } catch (err) {
+      console.error("Polling failed", err);
+    }
+  }, 2000);
+};
+
+
+
+
+
+// const handleGenerateOutline = async () => {
+//   try {
+//     console.log("handleGenerateOutline called")
+//     setIsSearching(true);
+
+//     await CreateBookOutline(); // triggers backend background task
+//     delay(5000); // wait for 5 seconds to allow status to update
+//     PollAndGetData(); // start polling for status and fetching research data
+    
+
+//     toast({
+//       title: "Generating your book outline",
+//       description: "This may take a few moments. Please don’t close this page.",
+//     });
+//   } catch (err) {
+//     setIsSearching(false);
+//     toast({
+//       title: "Failed to start outline generation",
+//       description: "Please try again.",
+//       variant: "destructive",
+//     });
+//   }
+//   finally {
+//     setIsSearching(false);
+//   }
+// };
+
+
+const handleGenerateOutline = async () => {
+  try {
+    setIsSearching(true);
+
+    await CreateBookOutline();
+
+    toast({
+      title: "Generating your book outline",
+      description: "This may take a few moments. Please don’t close this page.",
+    });
+
+    // give backend a moment to update status
+    await delay(1500);
+
+    PollAndGetData();
+  } catch (err) {
+    setIsSearching(false);
+    toast({
+      title: "Failed to start outline generation",
+      description: "Please try again.",
+      variant: "destructive",
+    });
+  }
+};
+
+useEffect(() => {
+  return () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  };
+}, []);
 
 
 
@@ -397,6 +615,38 @@ useEffect(() => {
             </div>
           ))}
         </div>
+        {/* Generate Outline CTA */}
+<div className="glass-card rounded-3xl p-8 mb-8 text-center animate-slide-up">
+  <h3 className="text-xl font-display font-medium text-foreground mb-3">
+    Ready to Generate Your Book Outline?
+  </h3>
+
+  <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
+    We’ll analyze your information and create a structured chapter outline
+    that you can review before writing your story.
+  </p>
+
+  <Button
+    variant="warm"
+    size="xl"
+    onClick={handleGenerateOutline}
+    disabled={isSearching}
+    className="shadow-glow"
+  >
+    {isSearching ? (
+      <>
+        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+        Generating Outline…
+      </>
+    ) : (
+      <>
+        Generate My Book Outline
+        <Sparkles className="h-5 w-5 ml-2" />
+      </>
+    )}
+  </Button>
+</div>
+
 
         {/* Chapter Overview */}
         <div className="glass-card rounded-3xl p-8 shadow-elevated mb-8 animate-slide-up" style={{ animationDelay: "0.5s" }}>

@@ -95,9 +95,11 @@ try {
     );
 
     if (!res.ok) {
+      console.log("response not ok from create outline")
       const err = await res.json();
       throw new Error(err.detail || "Submission failed");
     }
+    console.log("response ok from create outline")
 
     const data = await res.json();
     return data;

@@ -41,7 +41,7 @@ export const ReviewStep = ({
 
 
   const handleGenerateBook = async () => {
-    CreateBookOutline();
+    // CreateBookOutline();
   if (journeyMoments.length > 0) {
     const payload = journeyMoments.map(m => ({
       moment_type: m.type,
@@ -203,7 +203,7 @@ export const ReviewStep = ({
             onClick={handleGenerateBook}
             className="shadow-glow"
           >
-            Generate My Book
+            Proceed
             <ArrowRight className="h-5 w-5 ml-2" />
           </Button>
         </div>
