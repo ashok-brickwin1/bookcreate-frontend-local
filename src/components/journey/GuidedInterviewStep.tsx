@@ -82,26 +82,6 @@ export const GuidedInterviewStep = ({
   const progress = getTotalProgress(answers);
   const currentAnswer = answers[currentQuestion.id] || "";
 
-  // const handleAnswerChange = async(value: string) => {
-  //   onSaveAnswer(currentQuestion.id, value);
-  //   setRefinedAnswer(null);
-  //   setShowConfirmation(false);
-
-  //   await saveAnswer({
-  //   dummy_question_id: currentQuestion.id,
-
-  //   category: currentQuestion.category,
-  //   sub_section: currentQuestion.subSection,
-  //   life_stage: currentQuestion.lifeStage,
-
-  //   title: currentQuestion.title,
-  //   prompt: currentQuestion.prompt,
-  //   help_text: currentQuestion.helpText,
-  //   context_prompt: currentQuestion.contextPrompt,
-
-  //   answer_text: value,
-  // });
-  // };
 
   const handleAnswerChange = (value: string) => {
   onSaveAnswer(currentQuestion.id, value);
@@ -110,23 +90,6 @@ export const GuidedInterviewStep = ({
 };
 
  const handleComplete = async () => {
-  // await delay(200);
-
-  // const payload = questions
-  //   .filter(q => q && q.category) // ✅ CRITICAL SAFETY
-  //   .map(q => ({
-  //     dummy_question_id: q.id,
-  //     category: q.category,
-  //     sub_section: q.subSection,
-  //     life_stage: q.lifeStage,
-  //     title: q.title,
-  //     prompt: q.prompt,
-  //     help_text: q.helpText,
-  //     context_prompt: q.contextPrompt,
-  //     answer_text: answers[q.id] || "",
-  //   }));
-
-  // await bulkSaveAnswers(payload);
   onComplete();
 };
 
@@ -192,16 +155,6 @@ export const GuidedInterviewStep = ({
     setRefinedAnswer(null);
     setShowConfirmation(false);
   };
-
-  // const handleNext = () => {
-  //   if (currentIndex < questions.length - 1) {
-  //     setCurrentIndex(prev => prev + 1);
-  //     setRefinedAnswer(null);
-  //     setShowConfirmation(false);
-  //   } else {
-  //     onComplete();
-  //   }
-  // };
   const handleNext = async () => {
     setIsLoading(true);
     // await delay(200);

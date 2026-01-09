@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useBook, BookType } from "@/hooks/useBook";
 import { StepIndicator } from "./StepIndicator";
 import { BasicInfoStep, BasicInfo } from "./BasicInfoStep";
 import { BookSetupStep, BookSetupData } from "./BookSetupStep";
+import {fetchBookSetup} from "@/api/bookSetup";
+import {fetchSavedAnswers} from "@/api/answer";
 import { DigitalFootprintStep, FootprintData } from "./DigitalFootprintStep";
 import { GuidedInterviewStep } from "./GuidedInterviewStep";
 import { ReviewStep, JourneyMoment } from "./ReviewStep";
@@ -40,6 +42,110 @@ export const StoryJourney = ({ onBack }: StoryJourneyProps) => {
   const [localAnswers, setLocalAnswers] = useState<Record<string, string>>({});
   const [journeyMoments, setJourneyMoments] = useState<JourneyMoment[]>([]);
   const [writingStyle, setWritingStyle] = useState<WritingStyle | null>(null);
+  
+
+  const [initialBookSetup, setInitialBookSetup] = useState<BookSetupData | undefined>();
+const [loading, setLoading] = useState(true);
+
+
+
+const mapBookSetupFromApi = (apiData: any): BookSetupData => {
+  const b = apiData.book_setup;
+
+  return {
+    genre: b.genre,
+    customGenre: b.custom_genre ?? "",
+    workingTitle: b.working_title,
+    chapterCount: b.chapter_count,
+    desiredLength: b.desired_length,
+    dedication: b.dedication ?? "",
+    gdprConsent: b.gdpr_consent,
+  };
+};
+
+
+
+useEffect(() => {
+  const loadAll = async () => {
+    try {
+      const [bookSetupRes, answersRes] = await Promise.all([
+        fetchBookSetup(),
+        fetchSavedAnswers(),
+      ]);
+
+      // book setup
+      const mappedSetup = mapBookSetupFromApi(bookSetupRes);
+      setInitialBookSetup(mappedSetup);
+
+      // answers
+      const mappedAnswers: Record<string, string> = {};
+      answersRes.answers.forEach((a: any) => {
+        mappedAnswers[a.question_id] = a.answer_text;
+      });
+      setLocalAnswers(mappedAnswers);
+
+    } catch (err) {
+      console.error("Failed to preload journey data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadAll();
+}, []); 
+
+
+// useEffect(() => {
+//   const load = async () => {
+//     try {
+//       const apiRes = await fetchBookSetup();
+//       const mapped = mapBookSetupFromApi(apiRes);
+//       setInitialBookSetup(mapped);
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   load();
+// }, []);
+
+
+// useEffect(() => {
+//   const loadAnswers = async () => {
+//     try {
+//       const res = await fetchSavedAnswers();
+
+//       const mapped: Record<string, string> = {};
+//       res.answers.forEach((a: any) => {
+//         mapped[a.question_id] = a.answer_text;
+//       });
+
+//       setLocalAnswers(mapped); // ✅ FIX
+//     } catch (err) {
+//       console.error("Failed to prefill answers", err);
+//     }
+//   };
+
+//   loadAnswers();
+// }, []);
+
+
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <BookOpen className="h-8 w-8 animate-pulse text-primary" />
+        <p className="text-sm text-muted-foreground">
+          Loading your journey…
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
 
   const handleAddMoment = (moment: Omit<JourneyMoment, "id">) => {
     const newMoment: JourneyMoment = {
@@ -55,6 +161,7 @@ export const StoryJourney = ({ onBack }: StoryJourneyProps) => {
 
   // Merge local answers with saved answers
   const mergedAnswers = { ...answers, ...localAnswers };
+  
 
   const handleBasicInfoComplete = (info: BasicInfo) => {
     setBasicInfo(info);
@@ -131,7 +238,7 @@ export const StoryJourney = ({ onBack }: StoryJourneyProps) => {
         }
         return (
           <BookSetupStep
-            initialData={bookSetup || undefined}
+            initialData={initialBookSetup || undefined}
             onComplete={handleBookSetupComplete}
             onBack={() => setCurrentStep(0)}
           />

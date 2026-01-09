@@ -85,3 +85,23 @@ try {
   }
 
 };
+
+
+
+export const fetchSavedAnswers = async () => {
+  const token = localStorage.getItem("access_token");
+  console.log("fetchSavedAnswers called with token:", token);
+  const res = await fetch(`${API_BASE}/answers/dummy`, {
+    method: "GET",
+    headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch saved answers");
+  }
+
+  return res.json();
+};

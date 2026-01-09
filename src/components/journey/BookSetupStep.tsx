@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { submitBookSetup } from "@/api/bookSetup";
+import {fetchBookSetup} from "@/api/bookSetup";
 import { 
   ArrowRight, 
   BookOpen, 
@@ -101,6 +102,13 @@ export const BookSetupStep = ({ initialData, onComplete, onBack }: BookSetupStep
       gdprConsent: false,
     }
   );
+
+  
+
+
+
+
+
 
   const handleGenreSelect = (genreId: string) => {
     setFormData((prev) => ({ ...prev, genre: genreId }));

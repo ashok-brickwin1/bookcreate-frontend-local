@@ -143,3 +143,23 @@ try {
     console.error("Failed to submit create book pdf final", err);
   }
 };  
+
+
+
+
+export const fetchBookSetup = async () => {
+  console.log("Fetching book setup data");
+  
+  const res = await fetch(`${API_BASE}/book/setup/dummy`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch book setup");
+  }
+
+  return res.json();
+};

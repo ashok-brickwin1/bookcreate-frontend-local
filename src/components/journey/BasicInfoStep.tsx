@@ -304,6 +304,88 @@ const handleSubmit = async () => {
     return content.personal.length + content.professional.length + content.curiosity.length + content.legacy.length;
   };
 
+
+
+  const hydrateFromApiPayload = (payload: any) => {
+  if (!payload) return;
+
+  /* ---------------- Basic Info ---------------- */
+  setFormData({
+    fullName: payload.basic_info?.full_name || "",
+    email: payload.basic_info?.email || "",
+    role: payload.basic_info?.role || "",
+    bio: payload.basic_info?.bio || "",
+
+    linkedin: payload.social_profiles?.linkedin || "",
+    twitter: payload.social_profiles?.twitter || "",
+    website: payload.social_profiles?.website || "",
+
+    additionalSocialSites: payload.social_profiles?.others
+      ? Object.values(payload.social_profiles.others)
+      : [],
+
+    influentialContent: payload.influential_content || {
+      personal: [],
+      professional: [],
+      curiosity: [],
+      legacy: [],
+    },
+
+    forwardVision: {
+      careerOutlook: "",
+      skillsToLearn: "",
+      familyPlans: "",
+      curiosityAreas: "",
+      legacyGoals: "",
+    },
+  });
+
+  /* ---------------- Social Sites ---------------- */
+  if (payload.social_profiles?.others) {
+    const others = Object.entries(payload.social_profiles.others).map(
+      ([name, url]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        url: url as string,
+      })
+    );
+    setSocialSites(others);
+  }
+
+  /* ---------------- Vision Answers ---------------- */
+  if (Array.isArray(payload.vision_answers)) {
+    const visionMap: Record<string, string> = {};
+    payload.vision_answers.forEach((v: any) => {
+      visionMap[v.vision_question_id] = v.answer;
+    });
+    setVisionAnswers(visionMap);
+  }
+};
+
+
+useEffect(() => {
+  const loadExistingData = async () => {
+    try {
+      console.log("Loading existing onboarding data for hydration");
+      let accessToken = localStorage.getItem("access_token");
+      const res = await fetch(`${API_BASE}/onboarding/dummy`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      }
+    });
+      const data = await res.json();
+
+      hydrateFromApiPayload(data);
+    } catch (err) {
+      console.error("Failed to hydrate onboarding data", err);
+    }
+  };
+
+  loadExistingData();
+}, []);
+
+
   const isValid = formData.fullName.trim() && formData.email.trim();
   const hasSocialProfiles = formData.linkedin || formData.twitter || formData.website;
 
