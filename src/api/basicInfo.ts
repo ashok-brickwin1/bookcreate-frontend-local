@@ -42,9 +42,12 @@ const API_BASE = VITE_API_BASE_URL;
 
 export const handleSubmitBasicInfo = async (payload) => {
   console.log("handleSubmitBasicInfo called");
+  const newjourney = localStorage.getItem("newjourney");
+  const path=newjourney==="true"?"onboarding/submit":"onboarding/modify";
+ 
 
   const submitRequest = async (accessToken) => {
-    return fetch(`${API_BASE}/onboarding/submit`, {
+    return fetch(`${API_BASE}/${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

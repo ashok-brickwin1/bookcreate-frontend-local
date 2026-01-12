@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -103,11 +103,63 @@ export const BookSetupStep = ({ initialData, onComplete, onBack }: BookSetupStep
     }
   );
 
+  const [loading, setLoading] = useState(true);
+
   
 
 
 
+// const mapBookSetupFromApi = (apiData: any): BookSetupData => {
+//   const b = apiData.book_setup;
 
+//   return {
+//     genre: b.genre,
+//     customGenre: b.custom_genre ?? "",
+//     workingTitle: b.working_title,
+//     chapterCount: b.chapter_count,
+//     desiredLength: b.desired_length,
+//     dedication: b.dedication ?? "",
+//     gdprConsent: b.gdpr_consent,
+//   };
+// };
+
+const mapBookSetupFromApi = (apiData: any): BookSetupData => {
+    const b = apiData.book_setup;
+
+    return {
+      genre: b.genre ?? "",
+      customGenre: b.custom_genre ?? "",
+      workingTitle: b.working_title ?? "",
+      chapterCount: b.chapter_count ?? 10,
+      desiredLength: b.desired_length ?? "medium",
+      dedication: b.dedication ?? "",
+      gdprConsent: b.gdpr_consent ?? false,
+    };
+  };
+ useEffect(() => {
+    const loadBookSetup = async () => {
+      try {
+        const res = await fetchBookSetup();
+
+        if (res?.book_setup) {
+          const mapped = mapBookSetupFromApi(res);
+          const newjourney = localStorage.getItem("newjourney");
+          // if(newjourney==="false"){
+          //   console.log("Setting form data from API for existing journey");
+          //   setFormData(formData);
+          // }
+          if(newjourney=="false")
+          setFormData(mapped); // ✅ THIS was missing
+        }
+      } catch (err) {
+        console.error("Failed to load book setup", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBookSetup();
+  }, []);
 
 
   const handleGenreSelect = (genreId: string) => {
@@ -123,6 +175,20 @@ export const BookSetupStep = ({ initialData, onComplete, onBack }: BookSetupStep
     formData.workingTitle.trim() && 
     formData.gdprConsent &&
     (formData.genre !== "custom" || formData.customGenre?.trim());
+
+  
+    if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <BookOpen className="h-8 w-8 animate-pulse text-primary" />
+        <p className="text-sm text-muted-foreground">
+          Loading book setup…
+        </p>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen gradient-hero">

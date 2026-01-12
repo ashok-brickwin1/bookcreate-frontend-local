@@ -367,7 +367,14 @@ useEffect(() => {
     try {
       console.log("Loading existing onboarding data for hydration");
       let accessToken = localStorage.getItem("access_token");
-      const res = await fetch(`${API_BASE}/onboarding/dummy`, {
+      const newjourney = localStorage.getItem("newjourney");
+      const path=newjourney==="true"?"onboarding/dummy/empty":"onboarding/dummy";
+      if(newjourney==="true") {
+      console.log("newjourney is true, returning empty data");
+      return ;
+  }
+
+      const res = await fetch(`${API_BASE}/${path}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -375,7 +382,7 @@ useEffect(() => {
       }
     });
       const data = await res.json();
-
+      if(newjourney=="false")
       hydrateFromApiPayload(data);
     } catch (err) {
       console.error("Failed to hydrate onboarding data", err);

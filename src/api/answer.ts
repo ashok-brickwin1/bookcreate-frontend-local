@@ -91,7 +91,14 @@ try {
 export const fetchSavedAnswers = async () => {
   const token = localStorage.getItem("access_token");
   console.log("fetchSavedAnswers called with token:", token);
-  const res = await fetch(`${API_BASE}/answers/dummy`, {
+  const newjourney = localStorage.getItem("newjourney");
+  if(newjourney==="true") {
+    console.log("newjourney is true, returning empty answers");
+    return [];
+  }
+  const path=newjourney==="true"?"answers/dummy/empty":"answers/get-user-answers";
+  
+  const res = await fetch(`${API_BASE}/${path}`, {
     method: "GET",
     headers: {
           "Content-Type": "application/json",

@@ -41,6 +41,7 @@ export async function fetchResearchData(bookId: string) {
 
 export async function submitBookSetup(data: BookSetupData) {
   const token = localStorage.getItem("access_token");
+  
 
   const payload = {
     book_setup: {
@@ -54,7 +55,10 @@ export async function submitBookSetup(data: BookSetupData) {
     },
   };
 
-  const res = await fetch(`${API_BASE}/book/create`, {
+  const newjourney = localStorage.getItem("newjourney");
+  const path=newjourney==="true"?"book/create":"book/update";
+
+  const res = await fetch(`${API_BASE}/${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -149,12 +153,20 @@ try {
 
 export const fetchBookSetup = async () => {
   console.log("Fetching book setup data");
+  const newjourney = localStorage.getItem("newjourney");
+  if(newjourney==="true") {
+    console.log("newjourney:", newjourney);
+    return null;
+  }
+  const path=newjourney==="true"?"book/setup/dummy/empty":"book/last-book-data";
+  const token = localStorage.getItem("access_token");
   
-  const res = await fetch(`${API_BASE}/book/setup/dummy`, {
+  const res = await fetch(`${API_BASE}/${path}`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
-    },
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
   });
 
   if (!res.ok) {

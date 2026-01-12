@@ -23,8 +23,11 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
               <span className="font-display text-xl font-medium">ECwriter</span>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="hero" size="sm" onClick={onStart}>
-                Start Your Story
+              <Button variant="hero" size="sm" onClick={() => {
+    localStorage.setItem("newjourney", "false");
+    onStart();
+  }}>
+                Resume Your Story
               </Button>
               <UserMenu />
             </div>
@@ -54,7 +57,10 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: "0.3s" }}>
-              <Button variant="hero" size="xl" onClick={onStart} className="group">
+              <Button variant="hero" size="xl"  onClick={() => {
+    localStorage.setItem("newjourney", "true");
+    onStart();
+  }}className="group">
                 Begin Your Journey
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>

@@ -68,14 +68,14 @@ const mapBookSetupFromApi = (apiData: any): BookSetupData => {
 useEffect(() => {
   const loadAll = async () => {
     try {
-      const [bookSetupRes, answersRes] = await Promise.all([
-        fetchBookSetup(),
+      const [ answersRes] = await Promise.all([
+        // fetchBookSetup(),
         fetchSavedAnswers(),
       ]);
 
       // book setup
-      const mappedSetup = mapBookSetupFromApi(bookSetupRes);
-      setInitialBookSetup(mappedSetup);
+      // const mappedSetup = mapBookSetupFromApi(bookSetupRes);
+      // setInitialBookSetup(mappedSetup);
 
       // answers
       const mappedAnswers: Record<string, string> = {};
@@ -238,7 +238,7 @@ if (loading) {
         }
         return (
           <BookSetupStep
-            initialData={initialBookSetup || undefined}
+            initialData={bookSetup || undefined}
             onComplete={handleBookSetupComplete}
             onBack={() => setCurrentStep(0)}
           />
