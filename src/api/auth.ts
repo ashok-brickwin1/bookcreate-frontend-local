@@ -21,8 +21,10 @@ export async function login(email: string, password: string) {
     const err = await res.json();
     throw new Error(err.detail || "Login failed");
   }
+  const data = await res.json();
+  localStorage.setItem("hasBook", data.has_book);
 
-  return res.json(); // { access_token, token_type }
+  return data; // { access_token, token_type }
 }
 
 

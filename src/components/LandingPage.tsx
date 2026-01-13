@@ -11,6 +11,8 @@ interface LandingPageProps {
 }
 
 export const LandingPage = ({ onStart }: LandingPageProps) => {
+  const hasBook = localStorage.getItem("hasBook") === "true";
+
   return (
     <div className="min-h-screen">
       
@@ -23,12 +25,17 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
               <span className="font-display text-xl font-medium">ECwriter</span>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="hero" size="sm" onClick={() => {
-    localStorage.setItem("newjourney", "false");
+              <Button
+  variant="hero"
+  size="sm"
+  onClick={() => {
+    localStorage.setItem("newjourney", hasBook ? "false" : "true");
     onStart();
-  }}>
-                Resume Your Story
-              </Button>
+  }}
+>
+  {hasBook ? "Resume Your Story" : "Begin Your Journey"}
+</Button>
+
               <UserMenu />
             </div>
           </div>
