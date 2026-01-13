@@ -4,8 +4,10 @@ import { FootprintData } from "./DigitalFootprintStep";
 import { LifeJourneyTimeline, JourneyMoment } from "./LifeJourneyTimeline";
 import { ArrowRight, ArrowLeft, Edit3, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { bulkSaveLifeMoments } from "@/api/lifeMoment";
+import { bulkSaveLifeMoments, LifeMomentPayload } from "@/api/lifeMoment";
 import { CreateBookOutline } from "@/api/bookSetup";
+import { useEffect } from "react";
+import { fetchBulkLifeMoments } from "@/api/lifeMoment";
 
 
 
@@ -17,6 +19,7 @@ interface ReviewStepProps {
   journeyMoments: JourneyMoment[];
   onAddMoment: (moment: Omit<JourneyMoment, "id">) => void;
   onRemoveMoment: (id: string) => void;
+  onReplaceMoments: (moments: JourneyMoment[]) => void; 
   onComplete: () => void;
   onBack: () => void;
   onEditAnswer: (questionId: string) => void;
@@ -28,6 +31,7 @@ export const ReviewStep = ({
   journeyMoments,
   onAddMoment,
   onRemoveMoment,
+  onReplaceMoments,
   onComplete, 
   onBack,
   onEditAnswer 
@@ -38,6 +42,63 @@ export const ReviewStep = ({
     questions: answeredQuestions.filter(q => q.category === cat.id)
   })).filter(cat => cat.questions.length > 0);
 
+
+  const mapPayloadToJourneyMoment = (
+  payload: LifeMomentPayload,
+  index: number
+): JourneyMoment => ({
+  id: `server-${index}`, // stable id for React
+  type: payload.moment_type,
+  lifeStage: payload.life_stage,
+  year: String(payload.year),
+  title: payload.what_happened,
+  description: payload.story,
+  lesson: payload.lesson_learned,
+});
+
+useEffect(() => {
+  const loadLifeMoments = async () => {
+    try {
+      console.log("Fetching life moments from server...");
+      const res = await fetchBulkLifeMoments();
+
+      if (!res?.moments?.length) return;
+
+      const mappedMoments: JourneyMoment[] = res.moments.map(
+        (moment: LifeMomentPayload, idx: number) =>
+          mapPayloadToJourneyMoment(moment, idx)
+      );
+
+      onReplaceMoments(mappedMoments); // ✅ REPLACE, not append
+    } catch (err) {
+      console.error("Failed to load life moments", err);
+    }
+  };
+
+  loadLifeMoments();
+}, []);
+
+
+  // useEffect(() => {
+  //   const loadLifeMoments = async () => {
+  //     try {
+  //       console.log("Fetching life moments from server...");
+  //       const res = await fetchBulkLifeMoments();
+
+  //       if (!res?.moments?.length) return;
+
+  //       res.moments.forEach((moment: LifeMomentPayload, idx: number) => {
+  //         onAddMoment(
+  //           mapPayloadToJourneyMoment(moment, idx)
+  //         );
+  //       });
+  //     } catch (err) {
+  //       console.error("Failed to load life moments", err);
+  //     }
+  //   };
+
+  //   loadLifeMoments();
+  // }, []);
 
 
   const handleGenerateBook = async () => {
@@ -59,6 +120,8 @@ export const ReviewStep = ({
       return; // ⛔ stop book generation if save fails
     }
   }
+
+  // clear bulk save moments from state as its dupicating when we fetch again
 
   // ✅ continue normal flow
   onComplete();

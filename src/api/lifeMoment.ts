@@ -38,6 +38,7 @@ export const bulkSaveLifeMoments = async (
 //   return data;
 
 try {
+ 
     const token = localStorage.getItem("access_token");
     const payload={"moments":moments}
 
@@ -64,3 +65,25 @@ try {
     console.error("Failed to submit answer", err);
   }
 };  
+
+
+
+export const fetchBulkLifeMoments = async () => {
+  const token = localStorage.getItem("access_token");
+
+  const res = await fetch(
+    `${API_BASE}/life-moments/get-bulk`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch life moments");
+  }
+
+  return res.json(); // { moments: [...] }
+};

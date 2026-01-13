@@ -155,6 +155,10 @@ if (loading) {
     setJourneyMoments(prev => [...prev, newMoment]);
   };
 
+  const handleReplaceMoments = (moments: JourneyMoment[]) => {
+  setJourneyMoments(moments);
+};
+
   const handleRemoveMoment = (id: string) => {
     setJourneyMoments(prev => prev.filter(m => m.id !== id));
   };
@@ -266,6 +270,7 @@ if (loading) {
             journeyMoments={journeyMoments}
             onAddMoment={handleAddMoment}
             onRemoveMoment={handleRemoveMoment}
+            onReplaceMoments={handleReplaceMoments}
             onComplete={handleReviewComplete}
             onBack={() => setCurrentStep(2)}
             onEditAnswer={handleEditAnswer}
