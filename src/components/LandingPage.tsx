@@ -12,6 +12,23 @@ interface LandingPageProps {
 
 export const LandingPage = ({ onStart }: LandingPageProps) => {
   const hasBook = localStorage.getItem("hasBook") === "true";
+  const isLoggedIn = () => {
+  return Boolean(localStorage.getItem("access_token"));
+};
+
+const handleStartJourney = (forceNewJourney: boolean) => {
+  if (!isLoggedIn()) {
+    // preserve intent
+    // localStorage.setItem("post_login_redirect", "/");
+    // localStorage.setItem("newjourney", "true");
+
+    window.location.href = "/auth";
+    return;
+  }
+
+  localStorage.setItem("newjourney", forceNewJourney ? "true" : "false");
+  onStart();
+};
 
   return (
     <div className="min-h-screen">
@@ -28,11 +45,9 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
               <Button
   variant="hero"
   size="sm"
-  onClick={() => {
-    localStorage.setItem("newjourney", hasBook ? "false" : "true");
-    onStart();
-  }}
+  onClick={() => handleStartJourney(!hasBook)}
 >
+
   {hasBook ? "Resume Your Story" : "Begin Your Journey"}
 </Button>
 
@@ -64,10 +79,12 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: "0.3s" }}>
-              <Button variant="hero" size="xl"  onClick={() => {
-    localStorage.setItem("newjourney", "true");
-    onStart();
-  }}className="group">
+              <Button
+  variant="hero"
+  size="xl"
+  onClick={() => handleStartJourney(true)}
+>
+
                 Begin Your Journey
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>

@@ -71,8 +71,15 @@ export async function submitBookSetup(data: BookSetupData) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || "Failed to submit book setup");
   }
+  console.log("Book setup submitted successfully", res);
+  const resp = await res.json();
+  if(!resp.success){
+    console.log("Book setup submission unsuccessful:", resp.message);
+    throw new Error("Book setup submission unsuccessful");
+  }
+  console.log("Book setup response data:", resp);
 
-  return res.json();
+  return resp;
 }
 
 
@@ -140,8 +147,14 @@ try {
       const err = await res.json();
       throw new Error(err.detail || "Submission failed");
     }
+    console.log("response from create book final:", res);
+    
 
     const data = await res.json();
+    console.log("create book final response data:", data);
+    // if(!data.success){
+    //   throw new Error("Failed to create book pdf");
+    // }
     return data;
   } catch (err) {
     console.error("Failed to submit create book pdf final", err);
