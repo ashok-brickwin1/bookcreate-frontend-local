@@ -187,30 +187,13 @@ const handleSubmit = async () => {
   
 
   try {
-    // const token = localStorage.getItem("access_token");
 
-    // const res = await fetch(
-    //   `${API_BASE}/onboarding/submit`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       ...(token && { Authorization: `Bearer ${token}` }),
-    //     },
-    //     body: JSON.stringify(payload),
-    //   }
-    // );
-
-    // if (!res.ok) {
-    //   const err = await res.json();
-    //   throw new Error(err.detail || "Submission failed");
-    // }
-
-    // const data = await res.json();
-    const data= handleSubmitBasicInfo(payload)
+    
+    const data= await handleSubmitBasicInfo(payload)
     onComplete(formData); // keep your existing flow
   } catch (err) {
     console.error("Failed to submit onboarding", err);
+    alert(err.message);
   }
 };
 
