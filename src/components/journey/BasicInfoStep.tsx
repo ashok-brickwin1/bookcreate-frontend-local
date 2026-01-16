@@ -261,6 +261,20 @@ const handleSubmit = async () => {
     }
   };
 
+  const handleDoneContent = () => {
+    if (newContent.title.trim() && newContent.why.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        influentialContent: {
+          ...prev.influentialContent!,
+          [activeQuadrant]: [...(prev.influentialContent?.[activeQuadrant] || []), newContent]
+        }
+      }));
+      
+    }
+    setNewContent({ type: "book", title: "", why: "" });
+  };
+
   const handleRemoveContent = (quadrant: keyof InfluentialContent, index: number) => {
     setFormData(prev => ({
       ...prev,
@@ -920,7 +934,11 @@ useEffect(() => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t border-border">
-            <Button variant="outline" onClick={() => setShowContentDialog(false)}>
+            <Button variant="outline" onClick={() => {
+              handleDoneContent();
+              setShowContentDialog(false)
+              
+            }}>
               Done
             </Button>
             <Button 
