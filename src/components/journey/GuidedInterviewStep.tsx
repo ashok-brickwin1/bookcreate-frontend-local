@@ -63,6 +63,7 @@ export const GuidedInterviewStep = ({
 
   const currentQuestion = questions[currentIndex] ?? null;
   if (!currentQuestion) {
+    onComplete();  
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3 animate-fade-in">
@@ -73,6 +74,7 @@ export const GuidedInterviewStep = ({
       </div>
     </div>
   ); // Fallback if somehow we run out of questions
+ 
 }
   // const category = categories.find(c => c.id === currentQuestion.category);
   const category = categories.find(
