@@ -575,7 +575,12 @@ const handleStartJourney = (forceNewJourney: boolean) => {
             become the foundation that keeps your AI decisions authentic—and keeps you safe in the future. 
             <span className="block mt-2 text-foreground font-medium">Grounded in your story. Your truth. Your trust. Your network.</span>
           </p>
-          <Button variant="warm" size="xl" onClick={onStart} className="shadow-glow">
+          {/* <Button
+  variant="hero"
+  size="xl"
+  onClick={() => handleStartJourney(true)}
+></Button> */}
+          <Button variant="warm" size="xl" onClick={() => handleStartJourney(true)} className="shadow-glow">
             Start Your Journey
             <ArrowRight className="h-5 w-5 ml-2" />
           </Button>

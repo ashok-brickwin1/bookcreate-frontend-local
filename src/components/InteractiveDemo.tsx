@@ -604,7 +604,7 @@ export const InteractiveDemo = ({ onStart }: InteractiveDemoProps) => {
           </Button>
 
           {activeStage === stages.length - 1 && onStart && (
-            <Button variant="hero" size="sm" onClick={onStart} className="gap-2">
+            <Button variant="hero" size="sm" onClick={onStart} className="gap-2 hidden">
               Start Your Journey
               <Sparkles className="h-4 w-4" />
             </Button>
