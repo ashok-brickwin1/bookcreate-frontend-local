@@ -118,10 +118,18 @@ const handleSubmit = async (e: React.FormEvent) => {
         </button>
 
         <div className="glass-card rounded-3xl p-8 shadow-elevated">
-          <div className="flex items-center justify-center gap-2 mb-8">
+          {/* <div className="flex items-center justify-center gap-2 mb-8">
             <BookOpen className="h-8 w-8 text-primary" />
             <span className="font-display text-2xl font-medium">ECwriter</span>
-          </div>
+          </div> */}
+          <div className="flex items-center gap-2">
+  <img
+    src="/logo2.png"
+    alt="ECwriter logo"
+    className="h-5 w-5 object-contain"
+  />
+  <span className="font-display font-medium">ECwriter</span>
+</div>
 
           <h1 className="text-2xl font-display font-medium text-center text-foreground mb-2">
             {isLogin ? "Welcome Back" : "Create Your Account"}

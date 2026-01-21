@@ -37,10 +37,19 @@ const handleStartJourney = (forceNewJourney: boolean) => {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <BookOpen className="h-6 w-6 text-primary" />
               <span className="font-display text-xl font-medium">ECwriter</span>
-            </div>
+            </div> */}
+            <div className="flex items-center gap-2">
+  <img
+    src="/logo2.png"
+    alt="ECwriter logo"
+    className="h-5 w-5 object-contain"
+  />
+  <span className="font-display font-medium">ECwriter</span>
+</div>
+
             <div className="flex items-center gap-3">
               <Button
   variant="hero"
@@ -592,9 +601,14 @@ const handleStartJourney = (forceNewJourney: boolean) => {
         <div className="container max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-primary" />
-              <span className="font-display font-medium">ECwriter</span>
-            </div>
+  <img
+    src="/logo2.png"
+    alt="ECwriter logo"
+    className="h-5 w-5 object-contain"
+  />
+  <span className="font-display font-medium">ECwriter</span>
+</div>
+
             <p className="text-sm text-muted-foreground">
               AI-Generated Life Books grounded in both truth and meaning
             </p>
