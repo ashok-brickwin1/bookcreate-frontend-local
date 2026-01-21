@@ -314,10 +314,19 @@ if (loading) {
         <header className="fixed top-0 left-0 right-0 z-40 glass-card border-b border-border/50">
           <div className="container max-w-6xl mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
+                
                 <span className="font-display text-lg font-medium hidden sm:block">ECwriter</span>
-              </div>
+              </div> */}
+              <div className="flex items-center gap-2">
+            <img
+              src="/logo2.png"
+              alt="ECwriter logo"
+              className="h-5 w-5 object-contain"
+            />
+            <span className="font-display font-medium">ECwriter</span>
+          </div>
               
               <StepIndicator steps={STEPS} currentStep={currentStep} />
               
