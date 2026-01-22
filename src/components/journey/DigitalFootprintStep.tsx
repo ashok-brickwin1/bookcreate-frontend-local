@@ -543,6 +543,9 @@ useEffect(() => {
 
   if (!footprint) return null;
 
+  const hasOutline = footprint?.chapters?.length > 0;
+
+
   const sections = [
     { icon: User, title: "Biography", content: footprint.biography },
     { icon: Briefcase, title: "Career", content: footprint.career },
@@ -686,11 +689,24 @@ useEffect(() => {
             Edit My Info
           </Button>
           <Button
-            variant="warm"
-            size="xl"
-            onClick={() => onComplete(footprint)}
-            className="shadow-glow"
-          >
+  variant="warm"
+  size="xl"
+  onClick={() => {
+    if (!hasOutline) {
+      toast({
+        title: "Generate your outline first",
+        description:
+          "Please generate your book outline before continuing to add your story.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onComplete(footprint);
+  }}
+  className="shadow-glow"
+>
+
             Looks Good — Let's Add My Story
             <ArrowRight className="h-5 w-5 ml-2" />
           </Button>
