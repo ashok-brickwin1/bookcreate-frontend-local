@@ -390,7 +390,11 @@ useEffect(() => {
 }, []);
 
 
-  const isValid = formData.fullName.trim() && formData.email.trim();
+const isValid =
+  formData.fullName.trim() &&
+  formData.email.trim() &&
+  formData.linkedin.trim();
+
   const hasSocialProfiles = formData.linkedin || formData.twitter || formData.website;
 
   return (
@@ -484,7 +488,7 @@ useEffect(() => {
               <div className="space-y-2">
                 <Label htmlFor="linkedin" className="flex items-center gap-2 text-sm">
                   <Linkedin className="h-4 w-4 text-muted-foreground" />
-                  LinkedIn
+                  LinkedIn *
                 </Label>
                 <Input
                   id="linkedin"
@@ -779,7 +783,8 @@ useEffect(() => {
 
       {/* Social Sites Dialog */}
       <Dialog open={showSocialDialog} onOpenChange={setShowSocialDialog}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg h-[90vh] flex flex-col">
+
           <DialogHeader>
             <DialogTitle>Add Your Social Sites</DialogTitle>
             <DialogDescription>
@@ -787,7 +792,8 @@ useEffect(() => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="flex-1 overflow-y-auto space-y-4 py-4 pr-2">
+
             {/* Quick add suggestions */}
             <div className="flex flex-wrap gap-2">
               {SOCIAL_SITE_SUGGESTIONS.filter(s => !socialSites.find(ss => ss.name === s.name)).map((suggestion) => (
@@ -933,7 +939,8 @@ useEffect(() => {
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-border">
+          <div className="sticky bottom-0 bg-background flex justify-end gap-2 pt-4 border-t border-border">
+
             <Button variant="outline" onClick={() => {
               handleDoneContent();
               setShowContentDialog(false)

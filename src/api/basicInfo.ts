@@ -39,6 +39,14 @@ const API_BASE = VITE_API_BASE_URL;
 //   }
 // };
 
+const parseErrorResponse = async (res) => {
+  try {
+    const data = await res.json();
+    return data?.detail || data?.message || "Something went wrong";
+  } catch {
+    return "Something went wrong. Please try again later.";
+  }
+};
 
 export const handleSubmitBasicInfo = async (payload) => {
   console.log("handleSubmitBasicInfo called");
@@ -90,11 +98,15 @@ export const handleSubmitBasicInfo = async (payload) => {
 
       // 🔁 retry SAME API
       res = await submitRequest(accessToken);
+      if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Submission failed");
+    }
     }
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Submission failed");
+      const message = await parseErrorResponse(res);
+      throw new Error(message);
     }
 
     return await res.json();
