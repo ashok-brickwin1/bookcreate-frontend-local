@@ -783,7 +783,7 @@ const isValid =
 
       {/* Social Sites Dialog */}
       <Dialog open={showSocialDialog} onOpenChange={setShowSocialDialog}>
-        <DialogContent className="max-w-lg h-[90vh] flex flex-col">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
 
           <DialogHeader>
             <DialogTitle>Add Your Social Sites</DialogTitle>
@@ -792,7 +792,7 @@ const isValid =
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto space-y-4 py-4 pr-2">
+          <div className="space-y-4 py-4">
 
             {/* Quick add suggestions */}
             <div className="flex flex-wrap gap-2">
@@ -939,8 +939,7 @@ const isValid =
             )}
           </div>
 
-          <div className="sticky bottom-0 bg-background flex justify-end gap-2 pt-4 border-t border-border">
-
+       <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <Button variant="outline" onClick={() => {
               handleDoneContent();
               setShowContentDialog(false)
