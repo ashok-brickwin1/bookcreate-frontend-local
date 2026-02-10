@@ -106,6 +106,14 @@ export const fetchSavedAnswers = async () => {
         },
   });
 
+  if (res.status === 401) {
+    // 🔴 auth expired / invalid
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token"); // if you have one
+    window.location.href = "/auth";
+    return;
+  }
+
   if (!res.ok) {
     throw new Error("Failed to fetch saved answers");
   }
