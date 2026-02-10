@@ -860,7 +860,8 @@ const isValid =
 
       {/* Influential Content Dialog */}
       <Dialog open={showContentDialog} onOpenChange={setShowContentDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg h-[90vh] flex flex-col">
+
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {QUADRANTS.find(q => q.key === activeQuadrant)?.icon && (
@@ -876,7 +877,7 @@ const isValid =
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="flex-1 overflow-y-auto space-y-4 px-2 py-4 pb-24">
             <div className="space-y-2">
               <Label>Type of Content</Label>
               <Select value={newContent.type} onValueChange={(value) => setNewContent(prev => ({ ...prev, type: value }))}>
@@ -939,7 +940,8 @@ const isValid =
             )}
           </div>
 
-       <div className="flex justify-end gap-2 pt-4 border-t border-border">
+      <div className="flex justify-end gap-2 pt-4 border-t border-border">
+
             <Button variant="outline" onClick={() => {
               handleDoneContent();
               setShowContentDialog(false)
